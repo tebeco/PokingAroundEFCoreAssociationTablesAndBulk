@@ -41,6 +41,10 @@ builder.Services.AddDbContext<MyDbContext>((sp, optionsBuilder) =>
     });
 });
 
+builder.Services.AddUsers();
+builder.Services.AddCards();
+builder.Services.AddAllergens();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();

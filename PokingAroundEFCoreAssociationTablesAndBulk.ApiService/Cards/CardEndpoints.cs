@@ -14,7 +14,7 @@ public static class CardEndpoints
         var allergenGroup = app.MapGroup("/cards");
 
         allergenGroup.MapGet("/", GetCardsAsync);
-        allergenGroup.MapGet("/{id:int}", GetCardByIdAsync);
+        allergenGroup.MapGet("/{id:int}", GetCardByIdAsync).WithName(nameof(GetCardByIdAsync));
         allergenGroup.MapPost("/", CreateCardAsync);
         allergenGroup.MapPut("/{id:int}", UpdateCardAsync);
     }
@@ -35,11 +35,17 @@ public static class CardEndpoints
             : TypedResults.Ok(new CardDto(card.Id, card.CardNumber));
     }
 
-    public static async Task<Ok<CardDto>> CreateCardAsync([FromServices] CardService cardService, [FromBody] CreateCardDto createCardDto)
+    public static async Task<Created<CardDto>> CreateCardAsync(
+        HttpContext context,
+        [FromBody] CreateCardDto createCardDto,
+        [FromServices] LinkGenerator linkGenerator,
+        [FromServices] CardService cardService
+        )
     {
         var card = await cardService.CreateCardAsync(createCardDto);
 
-        return TypedResults.Ok(new CardDto(card.Id, card.CardNumber));
+        var customerLink = linkGenerator.GetUriByName(context, nameof(GetCardByIdAsync), new { id = card.Id });
+        return TypedResults.Created(customerLink, new CardDto(card.Id, card.CardNumber));
     }
 
     public static async Task<Results<NotFound, Ok<CardDto>>> UpdateCardAsync([FromServices] CardService cardService, [FromRoute] int id, [FromBody] UpdateCardDto updateCardDto)

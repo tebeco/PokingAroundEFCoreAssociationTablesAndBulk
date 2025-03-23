@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+
+using Microsoft.EntityFrameworkCore;
 
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Allergens;
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Entities;
@@ -61,6 +63,52 @@ public partial class UserService(MyDbContext myDbContext, AllergenService allerg
         return user;
     }
 
+    public async Task<List<User>> GetUserAllergensAsync(int userId)
+    {
+        return await myDbContext
+            .Users
+            .Where(u => u.Id == userId)
+            .Include(u => u.Allergens)
+            .ToListAsync();
+    }
+
+    public async Task<Allergen?> GetUserAllergenByIdAsync(int userId, int allergenId)
+    {
+        return await myDbContext
+            .Allergens
+            .Include(a => a.Users.Where(u => u.Id == userId))
+            .FirstOrDefaultAsync(a => a.Id == allergenId);
+    }
+
+    public async Task<User?> CreateUserAllergenAsync(int userId, int allergenId)
+    {
+        var user = await myDbContext
+            .Users
+            .Include(u => u.Allergens)
+            .Where(a => a.Id == userId)
+            .FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        var allergen = await myDbContext
+            .Allergens
+            .Where(a => a.Id == allergenId)
+            .FirstOrDefaultAsync();
+
+        if (allergen is null)
+        {
+            return null;
+        }
+
+        user.Allergens.Add(allergen);
+        await myDbContext.SaveChangesAsync();
+
+        return user;
+    }
+
     public async Task<User?> DeleteUserAllergenAsync(int userId, int allergenId)
     {
         var user = await myDbContext
@@ -74,10 +122,41 @@ public partial class UserService(MyDbContext myDbContext, AllergenService allerg
             return null;
         }
 
-        user.Allergens = [.. user.Allergens.Where(a => a.Id != allergenId)];
+        var allergen = user.Allergens.FirstOrDefault(a => a.Id == allergenId);
+
+        if (allergen is null)
+        {
+            return null;
+        }
+
+        user.Allergens.Remove(allergen);
         await myDbContext.SaveChangesAsync();
 
         return user;
     }
 
+    internal async Task<User?> UpdateUserAllergensAsync(int userId, int[] allergenIds)
+    {
+        var user = await myDbContext
+            .Users
+            .Include(u => u.Allergens)
+            .Where(a => a.Id == userId)
+            .FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        var allergens = await myDbContext
+            .Allergens
+            .Where(a => allergenIds.Contains(a.Id))
+            .ToListAsync();
+
+        user.Allergens.Clear();
+        user.Allergens.AddRange(allergens);
+        await myDbContext.SaveChangesAsync();
+
+        return user;
+    }
 }
