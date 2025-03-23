@@ -20,6 +20,19 @@ public class AllergenService(MyDbContext myDbContext)
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<User>> GetUsersForAllergenAsync(int id)
+    {
+        return await myDbContext
+            .Allergens
+            .Include(a => a.Users)
+                .ThenInclude(u => u.Allergens)
+            .Include(u => u.Users)
+                .ThenInclude(u => u.Cards)
+            .Where(allergen => allergen.Id == id)
+            .SelectMany(a => a.Users)
+            .ToListAsync();
+    }
+
     public async Task<List<Allergen>> GetAllergensByIdsAsync(int[] ids)
     {
         return await myDbContext
@@ -57,5 +70,13 @@ public class AllergenService(MyDbContext myDbContext)
         await myDbContext.SaveChangesAsync();
 
         return allergen;
+    }
+
+    public async Task<int> DeleteAllergenAsync(int allergenId)
+    {
+        return await myDbContext
+            .Allergens
+            .Where(a => a.Id == allergenId)
+            .ExecuteDeleteAsync();
     }
 }
