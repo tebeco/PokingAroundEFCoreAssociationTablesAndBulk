@@ -24,11 +24,11 @@ public static class AllergenEndpoints
         return app;
     }
 
-    public static async Task<List<AllergenDto>> GetAllergensAsync([FromServices] AllergenService allergenService)
+    public static async Task<Ok<List<AllergenDto>>> GetAllergensAsync([FromServices] AllergenService allergenService)
     {
         var allergens = await allergenService.GetAllergensAsync();
 
-        return [.. allergens.Select(u => new AllergenDto(u.Id, u.Name))];
+        return TypedResults.Ok(allergens.Select(u => new AllergenDto(u.Id, u.Name)).ToList());
     }
 
     public static async Task<Results<NotFound, Ok<AllergenDto>>> GetAllergenByIdAsync([FromServices] AllergenService allergenService, int allergenId)
@@ -40,19 +40,18 @@ public static class AllergenEndpoints
             : TypedResults.Ok(new AllergenDto(allergen.Id, allergen.Name));
     }
 
-    public static async Task<List<UserDto>> GetUsersForAllergenAsync([FromServices] AllergenService allergenService, int allergenId)
+    public static async Task<Ok<List<UserDto>>> GetUsersForAllergenAsync([FromServices] AllergenService allergenService, int allergenId)
     {
         var users = await allergenService.GetUsersForAllergenAsync(allergenId);
 
-        return [.. users
+        return TypedResults.Ok(users
             .Select(u => new UserDto(
                 u.Id,
                 u.Name,
                 u.Allergens.Select(a => new AllergenDto(a.Id, a.Name)),
                 u.Cards.Select(c => new CardDto(c.Id, c.CardNumber))
-            ))];
+            )).ToList());
     }
-    
 
     public static async Task<Ok<AllergenDto>> CreateAllergenAsync([FromServices] AllergenService allergenService, [FromBody] CreateAllergenDto createAllergenDto)
     {

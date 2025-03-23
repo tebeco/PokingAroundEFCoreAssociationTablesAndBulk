@@ -18,11 +18,11 @@ public static class CardEndpoints
         allergenGroup.MapPut("/{id:int}", UpdateCardAsync);
     }
 
-    public static async Task<List<CardDto>> GetCardsAsync([FromServices] CardService cardService)
+    public static async Task<Ok<List<CardDto>>> GetCardsAsync([FromServices] CardService cardService)
     {
         var cards = await cardService.GetCardsAsync();
 
-        return [.. cards.Select(c => new CardDto(c.Id, c.CardNumber))];
+        return TypedResults.Ok(cards.Select(c => new CardDto(c.Id, c.CardNumber)).ToList());
     }
 
     public static async Task<Results<NotFound, Ok<CardDto>>> GetCardByIdAsync([FromServices] CardService cardService, int id)

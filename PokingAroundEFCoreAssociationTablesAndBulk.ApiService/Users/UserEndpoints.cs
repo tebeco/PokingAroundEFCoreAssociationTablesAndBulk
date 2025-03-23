@@ -24,16 +24,17 @@ public static class UserEndpoints
         return app;
     }
 
-    public static async Task<List<UserDto>> GetAllUsersAsync([FromServices] UserService userService)
+    public static async Task<Ok<List<UserDto>>> GetAllUsersAsync([FromServices] UserService userService)
     {
         var users = await userService.GetAllUsersAsync();
-        return [.. users
-            .Select(u => new UserDto(
-                u.Id,
-                u.Name,
-                u.Allergens.Select(a => new AllergenDto(a.Id, a.Name)),
-                u.Cards.Select(c => new CardDto(c.Id, c.CardNumber))
-            ))];
+        return TypedResults.Ok(users
+                .Select(u => new UserDto(
+                    u.Id,
+                    u.Name,
+                    u.Allergens.Select(a => new AllergenDto(a.Id, a.Name)),
+                    u.Cards.Select(c => new CardDto(c.Id, c.CardNumber))
+                ))
+                .ToList());
     }
 
     public static async Task<Results<NotFound, Ok<UserDto>>> GetUserByIdAsync([FromServices] UserService userService, [FromRoute] int id)
