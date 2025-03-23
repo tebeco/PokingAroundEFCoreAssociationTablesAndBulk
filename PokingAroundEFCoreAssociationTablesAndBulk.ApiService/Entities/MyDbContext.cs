@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 namespace PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Entities;
 
 public class MyDbContext(DbContextOptions<MyDbContext> options) : DbContext(options)

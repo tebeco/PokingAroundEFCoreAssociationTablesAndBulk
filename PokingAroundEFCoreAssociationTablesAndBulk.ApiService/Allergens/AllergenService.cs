@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Entities;
 
 namespace PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Allergens;

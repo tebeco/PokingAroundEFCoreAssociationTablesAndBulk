@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Allergens;
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Cards;
-using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Entities;
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Users;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
@@ -29,7 +26,7 @@ public static class UserAllergensEndpoints
 
     public static async Task<Results<NotFound, Ok<UserDto>>> UpdateUserAllergensAsync([FromServices] UserService userService, [FromRoute] int userId, [FromBody] int[] allergenIds)
     {
-        var user= await userService.UpdateUserAllergensAsync(userId, allergenIds);
+        var user = await userService.UpdateUserAllergensAsync(userId, allergenIds);
 
         return user is null
             ? TypedResults.NotFound()

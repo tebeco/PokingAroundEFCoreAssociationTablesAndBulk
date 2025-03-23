@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Allergens;
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Cards;
-using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Entities;
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Users;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure

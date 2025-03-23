@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-
-using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Cards;
 using PokingAroundEFCoreAssociationTablesAndBulk.ApiService.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
