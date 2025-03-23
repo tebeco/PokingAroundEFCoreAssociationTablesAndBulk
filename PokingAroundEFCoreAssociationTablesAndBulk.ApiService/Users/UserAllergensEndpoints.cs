@@ -48,9 +48,7 @@ public static class UserAllergensEndpoints
     {
         var userAllergen = await userService.GetUserAllergenByIdAsync(userId, allergenId);
 
-        return userAllergen is null
-            ? TypedResults.NotFound()
-            : TypedResults.Ok(new AllergenDto(userAllergen.Id, userAllergen.Name));
+        return TypedResults.Extensions.OkOrNotFound(userAllergen, ua => new AllergenDto(ua.Id, ua.Name));
     }
 
 
